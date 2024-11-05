@@ -1,0 +1,321 @@
+<html><head><base href="." />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyclo Group - Sorties Vélo en Groupe</title>
+<style>
+:root {
+  --primary: #2E7D32;
+  --secondary: #FFA000;
+  --light: #F5F5F5;
+  --dark: #212121;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--light);
+}
+
+.navbar {
+  background-color: var(--primary);
+  padding: 1rem;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.add-ride-btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.add-ride-btn:hover {
+  background-color: #1B5E20;
+}
+
+.rides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.ride-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.ride-card:hover {
+  transform: translateY(-5px);
+}
+
+.btn {
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #FF8F00;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: white;
+  width: 90%;
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <h1>🚲 Cyclo Group</h1>
+</nav>
+
+<div class="container">
+  <button class="add-ride-btn" onclick="ouvrirNouvelleRide()">
+    <span>➕</span> Créer une nouvelle sortie
+  </button>
+  <h2>Prochaines Sorties Vélo</h2>
+  
+  <div class="rides-grid" id="ridesContainer">
+    <!-- Les sorties seront générées dynamiquement -->
+  </div>
+</div>
+
+<div class="modal" id="inscriptionModal">
+  <div class="modal-content">
+    <h3>Inscription à la sortie</h3>
+    <form id="inscriptionForm">
+      <div class="form-group">
+        <label for="nom">Nom</label>
+        <input type="text" id="nom" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+      </div>
+      <div class="form-group">
+        <label for="telephone">Téléphone</label>
+        <input type="tel" id="telephone" required>
+      </div>
+      <div class="form-group">
+        <label for="niveau">Niveau</label>
+        <select id="niveau" required>
+          <option value="debutant">Débutant</option>
+          <option value="intermediaire">Intermédiaire</option>
+          <option value="avance">Avancé</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">S'inscrire</button>
+      <button type="button" class="btn" onclick="closeModal()">Annuler</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="nouvelleRideModal">
+  <div class="modal-content">
+    <h3>Créer une nouvelle sortie</h3>
+    <form id="nouvelleRideForm">
+      <div class="form-group">
+        <label for="titre">Titre</label>
+        <input type="text" id="titre" required>
+      </div>
+      <div class="form-group">
+        <label for="date">Date</label>
+        <input type="date" id="date" required>
+      </div>
+      <div class="form-group">
+        <label for="heure">Heure</label>
+        <input type="time" id="heure" required>
+      </div>
+      <div class="form-group">
+        <label for="distance">Distance</label>
+        <input type="text" id="distance" placeholder="ex: 30km" required>
+      </div>
+      <div class="form-group">
+        <label for="niveauRide">Niveau</label>
+        <select id="niveauRide" required>
+          <option value="Débutant">Débutant</option>
+          <option value="Intermédiaire">Intermédiaire</option>
+          <option value="Avancé">Avancé</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="maxParticipants">Nombre maximum de participants</label>
+        <input type="number" id="maxParticipants" required min="1">
+      </div>
+      <button type="submit" class="btn">Créer</button>
+      <button type="button" class="btn" onclick="closeNouvelleRideModal()">Annuler</button>
+    </form>
+  </div>
+</div>
+
+<script>
+const sorties = [
+  {
+    id: 1,
+    titre: "Tour du Lac",
+    date: "2024-01-20",
+    heure: "09:00",
+    distance: "30km",
+    niveau: "Débutant",
+    participants: 12,
+    maxParticipants: 20
+  },
+  {
+    id: 2,
+    titre: "Parcours Montagneux",
+    date: "2024-01-21",
+    heure: "08:30",
+    distance: "50km",
+    niveau: "Intermédiaire",
+    participants: 8,
+    maxParticipants: 15
+  },
+  {
+    id: 3,
+    titre: "Circuit des Cols",
+    date: "2024-01-27",
+    heure: "07:00",
+    distance: "80km",
+    niveau: "Avancé",
+    participants: 5,
+    maxParticipants: 10
+  }
+];
+
+function afficherSorties() {
+  const container = document.getElementById('ridesContainer');
+  container.innerHTML = '';
+  
+  sorties.forEach(sortie => {
+    const card = document.createElement('div');
+    card.className = 'ride-card';
+    card.innerHTML = `
+      <h3>${sortie.titre}</h3>
+      <p>📅 Date: ${sortie.date}</p>
+      <p>⌚ Heure: ${sortie.heure}</p>
+      <p>📏 Distance: ${sortie.distance}</p>
+      <p>📊 Niveau: ${sortie.niveau}</p>
+      <p>👥 Participants: ${sortie.participants}/${sortie.maxParticipants}</p>
+      <button class="btn" onclick="ouvrirInscription(${sortie.id})">S'inscrire</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function ouvrirInscription(sortieId) {
+  const modal = document.getElementById('inscriptionModal');
+  modal.style.display = 'block';
+  modal.dataset.sortieId = sortieId;
+}
+
+function closeModal() {
+  document.getElementById('inscriptionModal').style.display = 'none';
+}
+
+function ouvrirNouvelleRide() {
+  document.getElementById('nouvelleRideModal').style.display = 'block';
+}
+
+function closeNouvelleRideModal() {
+  document.getElementById('nouvelleRideModal').style.display = 'none';
+}
+
+document.getElementById('inscriptionForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const sortieId = document.getElementById('inscriptionModal').dataset.sortieId;
+  const sortie = sorties.find(s => s.id == sortieId);
+  
+  if (sortie.participants < sortie.maxParticipants) {
+    sortie.participants++;
+    alert('Inscription réussie !');
+    closeModal();
+    afficherSorties();
+  } else {
+    alert('Désolé, cette sortie est complète.');
+  }
+});
+
+document.getElementById('nouvelleRideForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const nouvelleRide = {
+    id: sorties.length + 1,
+    titre: document.getElementById('titre').value,
+    date: document.getElementById('date').value,
+    heure: document.getElementById('heure').value,
+    distance: document.getElementById('distance').value,
+    niveau: document.getElementById('niveauRide').value,
+    participants: 0,
+    maxParticipants: parseInt(document.getElementById('maxParticipants').value)
+  };
+  
+  sorties.push(nouvelleRide);
+  closeNouvelleRideModal();
+  afficherSorties();
+  this.reset();
+});
+
+// Initialisation
+afficherSorties();
+</script>
+</body>
+</html>
